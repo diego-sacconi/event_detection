@@ -1,5 +1,5 @@
 load('..\\Datasets\\Bikes\\Barcelona\\Barcelona.mat')
-
+%%
 Y = Coord(:,2);
 X = Coord(:,1);
 
