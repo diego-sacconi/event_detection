@@ -1,18 +1,24 @@
-function [vert, sumEdgeCost] = growGreedy_costGain(par, scores, Dist, root, a)    
-    vert = (1:length(scores))';
-    %d = sum(sum(Dist(vert == root,vert == root)));
-    %w = sum(scores(vert == root));
-    %while (w < threshold)
-    sumEdgeCost = 0;
+function [takenNodes, cost, w, dist] = greedy(par, scores, Dist, root, a)    
+    vert = (1:length(scores))';    
+    spanningTreeCost = 0;
     [ind, val] = add(par,scores, Dist, root, vert, a);
     while (val > 0)
-    %for k = 1:1000    
         vert(ind) = root;
         [ind, val, edgeCost] = add(par,scores, Dist, root, vert, a);
-        sumEdgeCost = sumEdgeCost + edgeCost;
-        %w = sum(scores(vert == root));
+        spanningTreeCost = spanningTreeCost + edgeCost;
     end
+    takenNodes = (vert==root);
     
+    
+    if par == 1
+        w = sum(scores(takenNodes));
+        dist = 0.5*(-sum(sum(Dist(takenNodes,takenNodes))) + sum(Dist(:)));
+        cost = a*w + dist;
+    else
+        w = sum(scores(~takenNodes));
+        dist = spanningTreeCost;
+        cost = a*w + dist;
+    end    
 end
 
 function [ind, val, edgeCost] = add(par, scores, Dist, root, vert, a)

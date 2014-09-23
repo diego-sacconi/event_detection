@@ -1,5 +1,5 @@
 load('..\\Datasets\\Bikes\\Barcelona\\Barcelona.mat')
-
+%%
 Y = Coord(:,2);
 X = Coord(:,1);
 
@@ -13,39 +13,35 @@ alphaT = 0.1;
 
 %%
 alg = 'GreedyAP';
-[resGreedyAP, costGreedyAP, weightGreedyAP, distGreedyAP] = greedy(1, scores, Dist, root, alphaAP);
-taken = find(resGreedyAP);
+[res] = growGreedy_costGain(1, scores, Dist, root, alphaAP);
+%free = find(res ~= root);
+taken = find(res == root);
 
 %%
 alg = 'SDP';
 runs = 1000;
-[resSDP, costSDP, weightSDP, distSDP] = SDPbased(runs, alphaAP, scores, Dist, 2);
-taken = find(resSDP);
+[res, ~, ~, ~, ~, ~] = runNTimesSedumi(runs,alphaAP, scores, Dist, 2);
+%free = find(~res);
+taken = find(res);
 
 %%
 alg = 'Trivial';
+max(0, alphaAP*sum(scores)-0.5sum(Dist(:))
+[res, ~] = growGreedy_costGain(2, scores, Dist, root, alphaT);
+%free = find(res ~= root);
+taken = find(res == root);
 
-if (0.5*sum(Dist(:)) > sum(scores))
-    resTrivial = zeros(size(scores));
-    weightTrivial = 0;
-    distTrivial = 0.5*sum(Dist(:));    
-else
-    resTrivial = ones(size(scores));
-    weightTrivial = sum(scores);
-    distTrivial = 0; 
-end
-costTrivial = alphaAP*weightTrivial + distTrivial;
-taken = find(resTrivial);
 
 %%
 alg = 'GreedyT';
-[resGreedyT, costGreedyT, weightGreedyT, distGreedyT] = greedy(2, scores, Dist, root, alphaT);
+[res, ~] = growGreedy_costGain(2, scores, Dist, root, alphaT);
 %free = find(res ~= root);
-taken = find(resGreedyT);
+taken = find(res == root);
 
 %%
-alg = 'PD';
-[taken, costPD, weightPD, distPD] = runPCST(root, alphaT, Dist, scores, X, Y);
+[~, ~, ~, ~, ~ ,~, ~, res, ~, ~] = getComp(root, alphaT, Dist, scores, X, Y);
+
+taken = res;
 
 %%
 eps = 1e-16;

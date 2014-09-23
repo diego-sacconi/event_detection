@@ -1,20 +1,19 @@
-function [obj, t1, t2, t3, t4] = getObjValue(X, D, W, alpha,par)
-     t1 = 0;
-     t2 = 0;
-     t3 = 0;
-     t4 = 0;
+function [obj] = getObjValue(X, D, W, alpha,par)
+     
     if (par == 1)
         ind = find(X(2:end) == X(1));
         ind_ = find(X(2:end) ~= X(1));
         t1 = sum(W(ind));
         t2 = sum(sum(D(ind_,ind_)))/2;
         t3 = sum(sum(D(ind,ind_)));
-        t4 = sum(sum(D(ind,ind)))/2;
+        %t4 = sum(sum(D(ind,ind)))/2;
         obj = alpha*t1 + t2 + t3;
         %obj = alpha*t1 - t4/2;
     elseif par == 2
-        ind = find(X == 1);
-        ind_ = find(X ~= 1);
+        %ind = find(X == 1);
+        %ind_ = find(X ~= 1);
+        ind = (X == 1);
+        ind_ = ~ind;
         scores = W;
         dist = D;
         s = length(scores);
@@ -27,9 +26,7 @@ function [obj, t1, t2, t3, t4] = getObjValue(X, D, W, alpha,par)
         B(2:(end-1),end) = t;
         B(end,2:(end-1)) = t';
 
-        B(2:(end-1),2:(end-1)) = dist;
-
-    
+        B(2:(end-1),2:(end-1)) = dist;    
         
         obj = sum(sum(B(ind,ind_)))/2;
     end
