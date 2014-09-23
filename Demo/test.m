@@ -21,20 +21,13 @@ alg = 'SDP';
 runs = 1000;
 [resSDP, costSDP, weightSDP, distSDP] = SDPbased(runs, alphaAP, scores, Dist, 2);
 taken = find(resSDP);
-
+%%
+alg = 'BFNS';
+[resBNFS, costBNFS, weightBNFS, distBNFS] = GreedyDual(scores, Dist, alphaAP);
+taken = find(resBNFS);
 %%
 alg = 'Trivial';
-
-if (0.5*sum(Dist(:)) > sum(scores))
-    resTrivial = zeros(size(scores));
-    weightTrivial = 0;
-    distTrivial = 0.5*sum(Dist(:));    
-else
-    resTrivial = ones(size(scores));
-    weightTrivial = sum(scores);
-    distTrivial = 0; 
-end
-costTrivial = alphaAP*weightTrivial + distTrivial;
+[resTrivial, costTrivial, weightTrivial, distTrivial] = trivial(scores, Dist, alphaAP);
 taken = find(resTrivial);
 
 %%

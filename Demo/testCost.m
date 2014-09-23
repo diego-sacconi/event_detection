@@ -1,5 +1,5 @@
 load('..\\Datasets\\Bikes\\Barcelona\\Barcelona.mat')
-%%
+
 Y = Coord(:,2);
 X = Coord(:,1);
 
@@ -8,56 +8,57 @@ scores = scores(:,day);
 scores = scores/max(scores);
 Dist = Dist/max(Dist(:));
 root = getRoots(scores,1);
-alphaAP = 20;
-alphaT = 0.1;
 
-%%
-alg = 'GreedyAP';
-[res] = growGreedy_costGain(1, scores, Dist, root, alphaAP);
-%free = find(res ~= root);
-taken = find(res == root);
+aRangeAP = 0:10:200;
+aRangeTree = 0:0.02:0.2;
+aRangeTree = 0:0.02:0.03;
+SDPruns = 1000;
 
-%%
-alg = 'SDP';
-runs = 1000;
-[res, ~, ~, ~, ~, ~] = runNTimesSedumi(runs,alphaAP, scores, Dist, 2);
-%free = find(~res);
-taken = find(res);
+%% 
+%% Run Algorithms for All-Pairs distance model
 
-%%
-alg = 'Trivial';
-max(0, alphaAP*sum(scores)-0.5sum(Dist(:))
-[res, ~] = growGreedy_costGain(2, scores, Dist, root, alphaT);
-%free = find(res ~= root);
-taken = find(res == root);
+costAP = zeros(size(aRangeAP,1),4);
+for i = 1:size(aRangeAP,2)
+    a = aRangeAP(i);
+    [resGreedyAP, costGreedyAP, weightGreedyAP, distGreedyAP] = greedy(1, scores, Dist, root, a);
+    [resBNFS, costBNFS, weightBNFS, distBNFS] = GreedyDual(scores, Dist, a);
+    [resSDP, costSDP, weightSDP, distSDP] = SDPbased(runs, a, scores, Dist, 2);    
+    [resTrivial, costTrivial, weightTrivial, distTrivial] = trivial(scores, Dist, a); 
+    costAP(i,:) = [costGreedyAP, costBNFS, costSDP, costTrivial];
+end
 
-
-%%
-alg = 'GreedyT';
-[res, ~] = growGreedy_costGain(2, scores, Dist, root, alphaT);
-%free = find(res ~= root);
-taken = find(res == root);
-
-%%
-[~, ~, ~, ~, ~ ,~, ~, res, ~, ~] = getComp(root, alphaT, Dist, scores, X, Y);
-
-taken = res;
-
-%%
-eps = 1e-16;
-f = figure('Name',alg);
-colormap(gray);
-
-frontX = X(taken);
-frontY = Y(taken);
-frontSc = scores(taken);
+%set(gca,'FontSize',23);
+%set(0,'defaultlinelinewidth',2);
     
-%scatter(X, Y, 100*(scores),[0.75 0.75 0.75],'filled','MarkerEdgeColor',[0.75 0.75 0.75]);
-scatter(X, Y, 100*(scores+eps),[0.75 0.75 0.75],'filled','MarkerEdgeColor',[0 0 0]);
+plot(aRangeAP, costAP(:,1),'--k');
 hold on;
-scatter(frontX, frontY,100*(frontSc),[0.25 0.25 0.25],'filled','MarkerEdgeColor','k');
-axis off;    
-plot_google_map();
+plot(aRangeAP, costAP(:,2),'r');
+hold on;           
+plot(aRangeAP, costAP(:,3),'-.g');
+hold on;
+plot(aRangeAP, costAP(:,4),':b')
+    
+legend('GreedyAP', 'BFNS','SDP', 'Trivial','pos', 2);
+xlabel('weight multiplier');
+ylabel('cost');
+title('cost function value');  
 
 %%
+%% Run Algorithms for Tree distance model
+
+costTree = zeros(size(aRangeTree,1),2);
+for i = 1:size(aRangeTree,2)
+    a = aRangeTree(i);
+    [resGreedyT, costGreedyT, weightGreedyT, distGreedyT] = greedy(2, scores, Dist, root, a);
+    [taken, costPD, weightPD, distPD] = runPCST(root, a, Dist, scores, X, Y);
+    costTree(i,:) = [costGreedyT, costPD];
+end
+
+plot(aRangeTree, costTree(:,1),'--k');
+hold on;
+plot(aRangeTree, costTree(:,2),'r');
+legend('GreedyT', 'PD','pos',4);
+xlabel('weight multiplier');
+ylabel('cost');
+title('cost function value');
 
