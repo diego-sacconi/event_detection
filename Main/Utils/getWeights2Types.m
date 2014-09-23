@@ -25,8 +25,7 @@ function [scores, scores1, scores2, scores3, avg, theDayData] = getWeights2Types
         for i = weekends
             theWeekdayData = [theWeekdayData; dataset(dataset(:,2) == i,:)];
         end  
-    else
-        
+    else        
         for i = workdays
             theWeekdayData = [theWeekdayData; dataset(dataset(:,2) == i,:)];
         end        
