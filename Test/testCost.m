@@ -1,5 +1,5 @@
 load('..\\Datasets\\Bikes\\Barcelona\\Barcelona.mat')
-%%
+
 Y = Coord(:,2);
 X = Coord(:,1);
 
@@ -11,7 +11,7 @@ root = getRoots(scores,1);
 
 aRangeAP = 0:10:200;
 aRangeTree = 0:0.02:0.2;
-aRangeTree = 0:0.02:0.03;
+%aRangeTree = 0:0.02:0.03;
 SDPruns = 1000;
 
 %% 
@@ -22,7 +22,7 @@ for i = 1:size(aRangeAP,2)
     a = aRangeAP(i);
     [resGreedyAP, costGreedyAP, weightGreedyAP, distGreedyAP] = greedy(1, scores, Dist, root, a);
     [resBNFS, costBNFS, weightBNFS, distBNFS] = GreedyDual(scores, Dist, a);
-    [resSDP, costSDP, weightSDP, distSDP] = SDPbased(runs, a, scores, Dist, 2);    
+    [resSDP, costSDP, weightSDP, distSDP] = SDPbased(SDPruns, a, scores, Dist, 2);    
     [resTrivial, costTrivial, weightTrivial, distTrivial] = trivial(scores, Dist, a); 
     costAP(i,:) = [costGreedyAP, costBNFS, costSDP, costTrivial];
 end
