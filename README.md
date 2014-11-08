@@ -7,3 +7,6 @@ Rozenshtein Polina, Nikolaj Tatti, and Aristides Gionis. "Discovering dynamic co
 = Test =
 * test.m contains examples of running event detection by algorithms explained in the paper
 * testCost.m itersates for different values of multiplier Lambda
+
+Referncies:
+https://pypi.python.org/pypi/fibonacci-heap-mod
