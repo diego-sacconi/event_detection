@@ -9,4 +9,5 @@ Rozenshtein Polina, Nikolaj Tatti, and Aristides Gionis. "Discovering dynamic co
 * testCost.m itersates for different values of multiplier Lambda
 
 Referncies:
-https://pypi.python.org/pypi/fibonacci-heap-mod
+* https://networkx.github.io/
+* https://pypi.python.org/pypi/fibonacci-heap-mod
